@@ -45,6 +45,9 @@ dependencies {
 
     implementation "io.michaelrocks:libphonenumber-android:8.10.16"
 
-    implementation "com.google.guava:guava:24.1-jre"
+    /*
+    * https://stackoverflow.com/a/49619157/8196427
+    * */
+    implementation 'com.google.guava:guava:23.3-android'
 
 }
