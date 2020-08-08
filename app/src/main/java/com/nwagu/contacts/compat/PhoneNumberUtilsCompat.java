@@ -16,7 +16,6 @@
 
 package com.nwagu.contacts.compat;
 
-import android.content.Context;
 import android.telephony.PhoneNumberUtils;
 import android.text.Spannable;
 import android.text.TextUtils;
