@@ -19,13 +19,13 @@ package com.nwagu.contacts;
 import android.app.Application;
 import android.content.Context;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
+import com.google.i18n.phonenumbers.geocoding.PhoneNumberOfflineGeocoder;
 import com.nwagu.contacts.location.CountryDetector;
 
 import java.util.Locale;
-
-import io.michaelrocks.libphonenumber.android.NumberParseException;
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
-import io.michaelrocks.libphonenumber.android.Phonenumber;
 
 /**
  * Static methods related to Geo.
@@ -45,16 +45,15 @@ public class GeoUtil {
     }
 
     public static String getGeocodedLocationFor(Context context,  String phoneNumber) {
-//        final PhoneNumberOfflineGeocoder geocoder = PhoneNumberOfflineGeocoder.getInstance();
-//        final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
-//        try {
-//            final Phonenumber.PhoneNumber structuredPhoneNumber =
-//                    phoneNumberUtil.parse(phoneNumber, getCurrentCountryIso(context));
-//            final Locale locale = context.getResources().getConfiguration().locale;
-//            return geocoder.getDescriptionForNumber(structuredPhoneNumber, locale);
-//        } catch (NumberParseException e) {
-//            return null;
-//        }
-        return null;
+        final PhoneNumberOfflineGeocoder geocoder = PhoneNumberOfflineGeocoder.getInstance();
+        final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        try {
+            final Phonenumber.PhoneNumber structuredPhoneNumber =
+                    phoneNumberUtil.parse(phoneNumber, getCurrentCountryIso(context));
+            final Locale locale = context.getResources().getConfiguration().locale;
+            return geocoder.getDescriptionForNumber(structuredPhoneNumber, locale);
+        } catch (NumberParseException e) {
+            return null;
+        }
     }
 }

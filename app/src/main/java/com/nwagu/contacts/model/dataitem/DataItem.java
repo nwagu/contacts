@@ -223,7 +223,7 @@ public class DataItem implements Collapser.Collapsible<DataItem> {
         if (mKind == null || t.getDataKind() == null) {
             return false;
         }
-        return MoreContactUtils.shouldCollapse(getMimeType(), buildDataString(context, mKind),
+        return MoreContactUtils.shouldCollapse(context, getMimeType(), buildDataString(context, mKind),
                 t.getMimeType(), t.buildDataString(context, t.getDataKind()));
     }
 }

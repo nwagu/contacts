@@ -43,7 +43,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 
-    implementation "io.michaelrocks:libphonenumber-android:8.10.16"
+    implementation "com.googlecode.libphonenumber:geocoder:2.143"
 
     /*
     * https://stackoverflow.com/a/49619157/8196427

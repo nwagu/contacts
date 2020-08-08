@@ -324,7 +324,7 @@ public class DataAction implements Action {
             return false;
         }
         DataAction that = (DataAction)t;
-        if (!MoreContactUtils.shouldCollapse(mMimeType, mBody, that.mMimeType, that.mBody)) {
+        if (!MoreContactUtils.shouldCollapse(context, mMimeType, mBody, that.mMimeType, that.mBody)) {
             return false;
         }
         if (!TextUtils.equals(mMimeType, that.mMimeType)

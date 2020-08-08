@@ -26,10 +26,9 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.nwagu.contacts.model.account.AccountType;
-
-import io.michaelrocks.libphonenumber.android.NumberParseException;
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
 
 /**
  * Shared static contact utility methods.
@@ -44,7 +43,7 @@ public class MoreContactUtils {
      * {@link android.telephony.PhoneNumberUtils#compare(android.content.Context, String, String)}
      * instead
      */
-    public static boolean shouldCollapse(CharSequence mimetype1, CharSequence data1,
+    public static boolean shouldCollapse(Context context, CharSequence mimetype1, CharSequence data1,
               CharSequence mimetype2, CharSequence data2) {
         // different mimetypes? don't collapse
         if (!TextUtils.equals(mimetype1, mimetype2)) return false;
@@ -62,11 +61,11 @@ public class MoreContactUtils {
             return false;
         }
 
-        return shouldCollapsePhoneNumbers(data1.toString(), data2.toString());
+        return shouldCollapsePhoneNumbers(context, data1.toString(), data2.toString());
     }
 
     // TODO: Move this to PhoneDataItem.shouldCollapse override
-    private static boolean shouldCollapsePhoneNumbers(String number1, String number2) {
+    private static boolean shouldCollapsePhoneNumbers(Context context, String number1, String number2) {
         // Work around to address b/20724444. We want to distinguish between #555, *555 and 555.
         // This makes no attempt to distinguish between 555 and 55*5, since 55*5 is an improbable
         // number. PhoneNumberUtil already distinguishes between 555 and 55#5.
@@ -80,7 +79,7 @@ public class MoreContactUtils {
         final String[] dataParts1 = number1.split(WAIT_SYMBOL_AS_STRING);
         final String[] dataParts2 = number2.split(WAIT_SYMBOL_AS_STRING);
         if (dataParts1.length != dataParts2.length) return false;
-//        final PhoneNumberUtil util = PhoneNumberUtil.getInstance();
+        final PhoneNumberUtil util = PhoneNumberUtil.getInstance();
         for (int i = 0; i < dataParts1.length; i++) {
             // Match phone numbers represented by keypad letters, in which case prefer the
             // phone number with letters.
@@ -91,83 +90,83 @@ public class MoreContactUtils {
             if (TextUtils.equals(dataPart1, dataPart2)) continue;
 
             // do a full parse of the numbers
-//            final PhoneNumberUtil.MatchType result = util.isNumberMatch(dataPart1, dataPart2);
-//            switch (result) {
-//                case NOT_A_NUMBER:
-//                    // don't understand the numbers? let's play it safe
-//                    return false;
-//                case NO_MATCH:
-//                    return false;
-//                case EXACT_MATCH:
-//                    break;
-//                case NSN_MATCH:
-//                    try {
-//                        // For NANP phone numbers, match when one has +1 and the other does not.
-//                        // In this case, prefer the +1 version.
-//                        if (util.parse(dataPart1, null).getCountryCode() == 1) {
-//                            // At this point, the numbers can be either case 1 or 2 below....
-//                            //
-//                            // case 1)
-//                            // +14155551212    <--- country code 1
-//                            //  14155551212    <--- 1 is trunk prefix, not country code
-//                            //
-//                            // and
-//                            //
-//                            // case 2)
-//                            // +14155551212
-//                            //   4155551212
-//                            //
-//                            // From b/7519057, case 2 needs to be equal.  But also that bug, case 3
-//                            // below should not be equal.
-//                            //
-//                            // case 3)
-//                            // 14155551212
-//                            //  4155551212
-//                            //
-//                            // So in order to make sure transitive equality is valid, case 1 cannot
-//                            // be equal.  Otherwise, transitive equality breaks and the following
-//                            // would all be collapsed:
-//                            //   4155551212  |
-//                            //  14155551212  |---->   +14155551212
-//                            // +14155551212  |
-//                            //
-//                            // With transitive equality, the collapsed values should be:
-//                            //   4155551212  |         14155551212
-//                            //  14155551212  |---->   +14155551212
-//                            // +14155551212  |
-//
-//                            // Distinguish between case 1 and 2 by checking for trunk prefix '1'
-//                            // at the start of number 2.
-//                            if (dataPart2.trim().charAt(0) == '1') {
-//                                // case 1
-//                                return false;
-//                            }
-//                            break;
-//                        }
-//                    } catch (NumberParseException e) {
-//                        // This is the case where the first number does not have a country code.
-//                        // examples:
-//                        // (123) 456-7890   &   123-456-7890  (collapse)
-//                        // 0049 (8092) 1234   &   +49/80921234  (unit test says do not collapse)
-//
-//                        // Check the second number.  If it also does not have a country code, then
-//                        // we should collapse.  If it has a country code, then it's a different
-//                        // number and we should not collapse (this conclusion is based on an
-//                        // existing unit test).
-//                        try {
-//                            util.parse(dataPart2, null);
-//                        } catch (NumberParseException e2) {
-//                            // Number 2 also does not have a country.  Collapse.
-//                            break;
-//                        }
-//                    }
-//                    return false;
-//                case SHORT_NSN_MATCH:
-//                    return false;
-//                default:
-//                    throw new IllegalStateException("Unknown result value from phone number " +
-//                            "library");
-//            }
+            final PhoneNumberUtil.MatchType result = util.isNumberMatch(dataPart1, dataPart2);
+            switch (result) {
+                case NOT_A_NUMBER:
+                    // don't understand the numbers? let's play it safe
+                    return false;
+                case NO_MATCH:
+                    return false;
+                case EXACT_MATCH:
+                    break;
+                case NSN_MATCH:
+                    try {
+                        // For NANP phone numbers, match when one has +1 and the other does not.
+                        // In this case, prefer the +1 version.
+                        if (util.parse(dataPart1, null).getCountryCode() == 1) {
+                            // At this point, the numbers can be either case 1 or 2 below....
+                            //
+                            // case 1)
+                            // +14155551212    <--- country code 1
+                            //  14155551212    <--- 1 is trunk prefix, not country code
+                            //
+                            // and
+                            //
+                            // case 2)
+                            // +14155551212
+                            //   4155551212
+                            //
+                            // From b/7519057, case 2 needs to be equal.  But also that bug, case 3
+                            // below should not be equal.
+                            //
+                            // case 3)
+                            // 14155551212
+                            //  4155551212
+                            //
+                            // So in order to make sure transitive equality is valid, case 1 cannot
+                            // be equal.  Otherwise, transitive equality breaks and the following
+                            // would all be collapsed:
+                            //   4155551212  |
+                            //  14155551212  |---->   +14155551212
+                            // +14155551212  |
+                            //
+                            // With transitive equality, the collapsed values should be:
+                            //   4155551212  |         14155551212
+                            //  14155551212  |---->   +14155551212
+                            // +14155551212  |
+
+                            // Distinguish between case 1 and 2 by checking for trunk prefix '1'
+                            // at the start of number 2.
+                            if (dataPart2.trim().charAt(0) == '1') {
+                                // case 1
+                                return false;
+                            }
+                            break;
+                        }
+                    } catch (NumberParseException e) {
+                        // This is the case where the first number does not have a country code.
+                        // examples:
+                        // (123) 456-7890   &   123-456-7890  (collapse)
+                        // 0049 (8092) 1234   &   +49/80921234  (unit test says do not collapse)
+
+                        // Check the second number.  If it also does not have a country code, then
+                        // we should collapse.  If it has a country code, then it's a different
+                        // number and we should not collapse (this conclusion is based on an
+                        // existing unit test).
+                        try {
+                            util.parse(dataPart2, null);
+                        } catch (NumberParseException e2) {
+                            // Number 2 also does not have a country.  Collapse.
+                            break;
+                        }
+                    }
+                    return false;
+                case SHORT_NSN_MATCH:
+                    return false;
+                default:
+                    throw new IllegalStateException("Unknown result value from phone number " +
+                            "library");
+            }
         }
         return true;
     }

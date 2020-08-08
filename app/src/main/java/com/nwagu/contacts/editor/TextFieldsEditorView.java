@@ -45,6 +45,7 @@ import com.nwagu.contacts.ContactsUtils;
 import com.nwagu.contacts.R;
 import com.nwagu.contacts.compat.PhoneNumberUtilsCompat;
 import com.nwagu.contacts.model.RawContactDelta;
+import com.nwagu.contacts.model.RawContact;
 import com.nwagu.contacts.model.ValuesDelta;
 import com.nwagu.contacts.model.account.AccountType.EditField;
 import com.nwagu.contacts.model.dataitem.DataKind;

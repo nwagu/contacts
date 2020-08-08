@@ -16,14 +16,15 @@
 
 package com.nwagu.contacts.compat;
 
+import android.content.Context;
 import android.telephony.PhoneNumberUtils;
 import android.text.Spannable;
 import android.text.TextUtils;
 import android.text.style.TtsSpan;
 
-import io.michaelrocks.libphonenumber.android.NumberParseException;
-import io.michaelrocks.libphonenumber.android.PhoneNumberUtil;
-import io.michaelrocks.libphonenumber.android.Phonenumber;
+import com.google.i18n.phonenumbers.NumberParseException;
+import com.google.i18n.phonenumbers.PhoneNumberUtil;
+import com.google.i18n.phonenumbers.Phonenumber;
 
 /**
  * This class contains static utility methods extracted from PhoneNumberUtils, and the
@@ -139,29 +140,29 @@ public class PhoneNumberUtilsCompat {
             return null;
         }
 
-//        // Parse the phone number
-//        final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
-//        Phonenumber.PhoneNumber phoneNumber = null;
-//        try {
-//            // Don't supply a defaultRegion so this fails for non-international numbers because
-//            // we don't want to TalkBalk to read a country code (e.g. +1) if it is not already
-//            // present
-//            phoneNumber = phoneNumberUtil.parse(phoneNumberString, /* defaultRegion */ null);
-//        } catch (NumberParseException ignored) {
-//        }
+        // Parse the phone number
+        final PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.getInstance();
+        Phonenumber.PhoneNumber phoneNumber = null;
+        try {
+            // Don't supply a defaultRegion so this fails for non-international numbers because
+            // we don't want to TalkBalk to read a country code (e.g. +1) if it is not already
+            // present
+            phoneNumber = phoneNumberUtil.parse(phoneNumberString, /* defaultRegion */ null);
+        } catch (NumberParseException ignored) {
+        }
 
         // Build a telephone tts span
         final TtsSpan.TelephoneBuilder builder = new TtsSpan.TelephoneBuilder();
-//        if (phoneNumber == null) {
-//            // Strip separators otherwise TalkBack will be silent
-//            // (this behavior was observed with TalkBalk 4.0.2 from their alpha channel)
-//            builder.setNumberParts(splitAtNonNumerics(phoneNumberString));
-//        } else {
-//            if (phoneNumber.hasCountryCode()) {
-//                builder.setCountryCode(Integer.toString(phoneNumber.getCountryCode()));
-//            }
-//            builder.setNumberParts(Long.toString(phoneNumber.getNationalNumber()));
-//        }
+        if (phoneNumber == null) {
+            // Strip separators otherwise TalkBack will be silent
+            // (this behavior was observed with TalkBalk 4.0.2 from their alpha channel)
+            builder.setNumberParts(splitAtNonNumerics(phoneNumberString));
+        } else {
+            if (phoneNumber.hasCountryCode()) {
+                builder.setCountryCode(Integer.toString(phoneNumber.getCountryCode()));
+            }
+            builder.setNumberParts(Long.toString(phoneNumber.getNationalNumber()));
+        }
         return builder.build();
     }
 
