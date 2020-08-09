@@ -1,3 +1,3 @@
 # contacts
 
-AOSP contacts app
+A fork of the AOSP Contacts app
